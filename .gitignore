@@ -1,0 +1,10 @@
+*.pyc
+*.war
+*.zip
+downloaded
+geonode_formhub.egg-info
+geonode_formhub/uploaded/thumbs
+geoserver
+local_settings.py
+debug.log
+development.db

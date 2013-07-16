@@ -5,26 +5,26 @@ from urlparse import urlparse
 from django.conf import settings
 
 def get_client(url):
-	
-	_user, _password = settings.GEOSERVER_CREDENTIALS
+    
+    _user, _password = settings.GEOSERVER_CREDENTIALS
 
-	http_client = httplib2.Http()
-	http_client.add_credentials(_user, _password)
-	http_client.add_credentials(_user, _password)
-	_netloc = urlparse(url).netloc
-	http_client.authorizations.append(
-	    httplib2.BasicAuthentication(
-	        (_user, _password),
-	        _netloc,
-	        settings.GEOSERVER_BASE_URL,
-	        {},
-	        None,
-	        None,
-	        http_client
-	    )
-	)
+    http_client = httplib2.Http()
+    http_client.add_credentials(_user, _password)
+    http_client.add_credentials(_user, _password)
+    _netloc = urlparse(url).netloc
+    http_client.authorizations.append(
+        httplib2.BasicAuthentication(
+            (_user, _password),
+            _netloc,
+            settings.GEOSERVER_BASE_URL,
+            {},
+            None,
+            None,
+            http_client
+        )
+    )
 
-	return http_client
+    return http_client
 
 def updatebounds(layername):
     
@@ -41,6 +41,6 @@ def updatebounds(layername):
     http_client= get_client(url)
 
     try:
-		r = http_client.request(url, method='PUT',body=data, headers=headers))
+        r = http_client.request(url, method='PUT',body=data, headers=headers))
     except:
         raise Exception("Geoserver error when updating bounds")

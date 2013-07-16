@@ -9,15 +9,15 @@ from django.test import TestCase
 from django.template.loader import render_to_string
 
 test_context = {
-	'fields': [
-		{
-		'name': u'name', 
-		'value': u'Here'
-		}
-	],
-	'lat': u'45.81057869363576',
-	'layer_name': u'fh_test',
-	'lon': u'8.628644105046988'
+    'fields': [
+        {
+        'name': u'name', 
+        'value': u'Here'
+        }
+    ],
+    'lat': u'45.81057869363576',
+    'layer_name': u'fh_test',
+    'lon': u'8.628644105046988'
 }
 
 class FormTests(TestCase):

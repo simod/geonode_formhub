@@ -1,6 +1,6 @@
 <wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.1.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <wfs:Insert>
-        <feature:{{ layer_name }} xmlns:feature="http://www.geonode.org/">
+        <feature:{{ layername }} xmlns:feature="http://www.geonode.org/">
             <feature:the_geom>
                 <gml:Point xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:4326">
                     <gml:pos>{{ lon }} {{ lat }}</gml:pos>
@@ -12,6 +12,6 @@
             <feature:id>
                 {{ id }}
             </feature:id>
-        </feature:{{ layer_name }}>
+        </feature:{{ layername }}>
     </wfs:Insert>
 </wfs:Transaction>

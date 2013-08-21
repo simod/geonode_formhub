@@ -10,7 +10,7 @@ Create a new virtualenv for geonode_formhub, install GeoNode and setup your proj
 
     $ mkvirtualenv my_geonode
     $ pip install Django
-    $ django-admin.py startproject my_geonode --template=https://github.com/GeoNode/geonode-project/archive/master.zip -epy,rst 
+    $ django-admin.py startproject my_geonode --template=https://github.com/simod/geonode_formhub/archive/master.zip -epy,rst 
     $ pip install -e my_geonode
 
 To install the latest from GeoNode's master branch use the following command::

@@ -16,7 +16,7 @@ test_context = {
         }
     ],
     'lat': u'45.81057869363576',
-    'layer_name': u'fh_test',
+    'layername': u'fh_test',
     'lon': u'8.628644105046988'
 }
 
@@ -26,3 +26,8 @@ class FormTests(TestCase):
         Tests that the transaction template is rendered properly
         """
         template = render_to_string('formhub/transaction_insert.xml', test_context)
+        pass
+
+    def test_insert_request(self):
+        # Test that upon a post submission the feature is inserted correctly
+        pass

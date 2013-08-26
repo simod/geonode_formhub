@@ -159,6 +159,7 @@
 
   <script type="text/javascript">
       var featureLayer, features = {};
+
       function zoom_to_box(map, bbox){
             var bounds = [
                 [bbox[2], bbox[0]],
@@ -187,15 +188,29 @@
       }
 
       function highlightFeature(layer){
+        var popupContent = '', properties = layer.feature.properties;
+        for(var property in properties){
+          popupContent += '<strong>'+property+'</strong>: '+properties[property]+'\n\r';
+        }
         layer.setIcon(hoverIcon);
+        layer.bindPopup(popupContent, {closeButton: false}).openPopup();
       }
 
       function resetFeature(layer){
         layer.setIcon(defaultIcon);
+        layer.closePopup();
+      }
+
+      function idFromFeature(feature){
+        return feature.id.split('.')[1];
+      }
+
+      function idFromImage(image){
+        return image.id.split('-')[0];
       }
 
       function onEachFeature(feature, layer) {
-          var id = feature.id.split('.')[1];
+          var id = idFromFeature(feature);
           features[id] = layer;
           layer.on({
               mouseover: function(){
@@ -210,13 +225,13 @@
       }
 
       $('.feature_img').mouseover(function(e){
-        var id = e.target.id.split('-')[0];
+        var id = idFromImage(e.target);
         highlightFeature(features[id]);
         toggleFeatureClass(id);
       });
 
       $('.feature_img').mouseout(function(e){
-        var id = e.target.id.split('-')[0];
+        var id = idFromImage(e.target);
         resetFeature(features[id]);
         toggleFeatureClass(id);
       });

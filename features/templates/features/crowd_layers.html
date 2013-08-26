@@ -1,0 +1,26 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+{% load pagination_tags %}
+{% load taggit_extras %}
+{% load staticfiles %}
+{% load url from future %}
+
+{% block title %} {% trans "Explore Crowd Layers" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}crowd{% endblock %}
+
+{% block body %}
+    <div class="span12">
+      <h2 class="page-title">{% trans "Explore Crowd Layers" %}</h2>
+    </div>
+    {% for layer in layers %}
+      {% include "features/_crowd_layer_list_item.html" %}
+    {% endfor %}
+ {% endblock %}
+
+{% block extra_script %}
+  <script type="text/javascript">
+  var default_type = 'layer';
+  </script>
+  {% include 'search_scripts.html' %}
+{% endblock extra_script %}

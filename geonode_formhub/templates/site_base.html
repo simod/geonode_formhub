@@ -1,4 +1,11 @@
 {% extends "base.html" %}
+{% load i18n %}
+
 {% block extra_head %}
       <link href="{{ STATIC_URL }}css/site_base.css" rel="stylesheet"/>
+{% endblock %}
+{% block extra-nav %}
+<li id="nav_crowd">
+    <a href="{% url "crowd_layers" %}">{% trans "Crowd Layers" %}</a>
+</li>
 {% endblock %}

@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 from geonode.layers.models import Layer
 
@@ -13,4 +14,7 @@ class Feature(models.Model):
     image = models.CharField(max_length=128, blank=True, null=True)
 
     def __unicode__(self):
-        return 'Feature'
+        return 'Feature of %s' % self.layer.typename
+
+    def image_url(self):
+        return "%s%s" % (settings.FORMHUB_MEDIA_URL, self.image)

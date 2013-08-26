@@ -52,7 +52,6 @@ def form_save(req):
     check_geonode_is_up()
 
     body = json.loads(req.body)
-    print body
     layername = body['_xform_id_string']
     try:
         layer = Layer.objects.get(title=layername)

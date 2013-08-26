@@ -1,0 +1,203 @@
+{% extends "site_base.html" %}
+{% load geonode_auth %}
+{% load i18n %}
+{% load dialogos_tags %}
+{% load agon_ratings_tags %}
+{% load bootstrap_tags %}
+{% load url from future %}
+{% load base_tags %}
+
+{% block title %}{{ layer.title|default:layer.typename }} — {{ block.super }}{% endblock %}
+
+{% block body_class %}crowd{% endblock %}
+
+{% block body_outer %}
+  <div class="span5">
+    <h2 class="page-title">{{ layer.title|default:layer.typename }}</h2>
+  </div>
+  <div class="span7 action-group">
+    <div class="btn-group pull-right">
+      <!-- download layer -->
+      <div class="btn-group">
+        <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
+          {% trans "Download Layer" %}
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          {% for link in layer.link_set.download %}
+            <li><a href="{{ link.url }}">{{ link.name }} <i class="icon-chevron-right"></i></a></li>
+          {% endfor %}
+        </ul>
+      </div>
+      <!-- download metadata -->
+      <div class="btn-group">
+        <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
+          {% trans "Download Metadata" %}
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          {% for link in layer.link_set.metadata %}
+            <li><a href="{{ link.url }}">{{ link.name }} <i class="icon-chevron-right"></i></a></li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% has_obj_perm user layer "layers.change_layer" as can_edit_layer %}
+      {% if can_edit_layer %}
+      <!-- edit layer dropdown -->
+      <div class="btn-group">
+        <a class="btn btn-large btn-info dropdown-toggle" data-toggle="dropdown" href="#">
+          {% trans "Edit Layer" %}
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          <!--li><a href="">Edit Layer Data <i class="icon-chevron-right"></i></a></li-->
+          <li><a href="{% url "layer_metadata" layer.typename %}">{% trans "Edit Metadata" %} <i class="icon-chevron-right"></i></a></li>
+          <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Permissions" %} <i class="icon-chevron-right"></i></a></li>
+          <li><a href="{% url "layer_style_manage" layer.typename %}">{% trans "Manage Styles" %} <i class="icon-chevron-right"></i></a></li>
+          <li><a class="style-edit" href="#">{% trans "Edit Styles" %} <i class="icon-chevron-right"></i></a></li>
+          <li><a href="{% url "layer_replace" layer.typename %}">{% trans "Replace this Layer" %} <i class="icon-chevron-right"></i></a></li>
+          <li><a href="{% url "layer_remove" layer.typename %}">{% trans "Remove this Layer" %} <i class="icon-chevron-right"></i></a></li>
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="span8">
+    <div id="embedded_map" class="mrg-btm">
+        <div id="preview_map"></div>
+    </div>
+  </div>
+  <aside class="span4">
+    <div class="well">
+        <h2>{% trans "Crowd contributions" %}</h2>
+        <ul class="unstyled space">
+          {% for feature in features %} 
+            <li><img src="{{ feature.image_url }}" width="100" height="100"></li>
+          {% empty %}
+            <li>{% trans "This layer does not have any contributions yet." %}</li>
+          {% endfor %}
+        </ul>
+    </div>
+    <div class="well">
+        <h2>{% trans "Maps using this layer" %}</h2>
+        {% if layer.maps %}
+        <p>{% trans "List of maps using this layer:" %}</p>
+        {% endif %}
+        <ul class="unstyled space">
+          {% for maplayer in layer.maps %} 
+            <li><a href="{{ maplayer.map.get_absolute_url }}">{{ maplayer.map.title }}</a></li>
+          {% empty %}
+            <li>{% trans "This layer is not currently used in any maps." %}</li>
+          {% endfor %}
+        </ul>
+    </div>
+    {% if documents.count > 0 %}
+    <div class="well">
+        <h2>{% trans "Documents related to this layer" %}</h2>
+        <p>{% trans "List of documents related to this layer:" %}</p>
+        <ul class="unstyled space">
+          {% for document in documents %} 
+            <li><a href="{{ document.get_absolute_url }}">{{ document.title }}</a></li>
+          {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    <div class="well">
+        <h2>{% trans "Create a map using this layer" %}</h2>
+        <p>{% trans "Click the button below to generate a new map based on this layer." %}</p>
+        <a href="{% url "new_map" %}?layer={{layer.typename}}" class="btn btn-large">{% trans "Create a Map" %}</a>
+    </div>
+    {% if user.is_authenticated %}
+    <div class="well">
+        <h2>{% trans "Styles" %}</h2>
+        <p>{% trans "The following styles are associated with this layer. Choose a style to view it in the preview map." %}</p>
+        <ul class="unstyled space">
+          {% for style in layer.styles.all %}
+            <li>
+                {% if layer.default_style == style %}
+                    <input type="radio" checked name="style" id="{{ style.name }}" value="{{ style.title }}"/>
+                    (default style)
+                {% else %}
+                    <input type="radio" name="style" id="{{ style.name }}" value="{{ style.title }}"/>
+                {% endif %}
+                <a href="{{ GEOSERVER_BASE_URL }}styles/{{ style.name }}.sld" >{{ style.sld_title }}</a>
+            </li>
+          {% empty %}
+            <li>{% trans "No styles associated with this layer" %}</li>
+          {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    <div class="well">
+      <h2>{% trans "About" %}</h2>
+      <p>{% trans "Layer Owner" %}</p>
+      {% with layer.owner.profile as profile %}
+        {% include "people/_profile_about_item.html" %}
+      {% endwith %}
+      <p>{% trans "Point of Contact" %}</p>
+      {% with layer.poc as profile %}
+        {% include "people/_profile_about_item.html" %}
+      {% endwith %}
+      <p>{% trans "Metadata Author" %}</p>
+      {% with layer.metadata_author as profile %}
+        {% include "people/_profile_about_item.html" %}
+      {% endwith %}
+    </div>
+  </aside>
+  {% include "_permissions_form.html" %}
+{% endblock %}
+
+{% block extra_script %}
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css" />
+  <!--[if lte IE 8]>
+      <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.ie.css" />
+  <![endif]-->
+
+  <script src="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js"></script>
+    
+  {% include "_permissions_form_js.html" %}
+
+  <script type="text/javascript">
+    var geojsonLayer;
+      function zoom_to_box(map, bbox){
+            var bounds = [
+                [bbox[2], bbox[0]],
+                [bbox[3], bbox[1]]
+            ];
+            map.fitBounds(bounds);
+        }
+      var map = L.map('preview_map').setView([51.505, -0.09], 13);    
+      L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+
+      function highlightFeature(e){
+        geojsonLayer.bringToFront();
+      }
+      function resetHighlight(e) {
+          geojsonLayer.resetStyle(e.target);
+      }
+      function onEachFeature(feature, layer) {
+          layer.on({
+              mouseover: highlightFeature,
+              mouseout: resetHighlight
+         });
+      }
+
+      $.ajax({
+          type: "GET",
+          url: "/proxy?url={{ layer.json_url|urlencode }}",
+          dataType: 'json',
+          success: function (response) {
+
+              geojsonLayer = L.geoJson(response,{
+                onEachFeature: onEachFeature
+              }).addTo(map);
+              zoom_to_box(map, [{{ layer.bbox_string }}]);
+          }
+      });
+      // L.tileLayer("{{ layer.tiles_url|safe }}",{}).addTo(map);
+      // zoom_to_box(map, [{{ layer.bbox_string }}]);
+  </script>
+
+{% endblock extra_script %}

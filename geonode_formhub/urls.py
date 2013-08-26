@@ -73,6 +73,7 @@ urlpatterns = patterns('',
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^admin/', include(admin.site.urls)),
     (r'^formhub/', include('formhub.urls')),
+    (r'^crowd_layers/', include('features.urls')),
     )
 
 #Documents views

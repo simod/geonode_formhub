@@ -52,5 +52,5 @@ In ODK set the address to http://192.168.2.1/youruser
 
 Start submitting.
 
-The submissions will appear in the Crowd Forms tab of GeoNode.
+The submissions will appear in the Crowd Layers tab of GeoNode.
 

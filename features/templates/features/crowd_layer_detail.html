@@ -72,7 +72,7 @@
         <h2>{% trans "Crowd contributions" %}</h2>
         <ul class="unstyled space">
           {% for feature in features %} 
-            <li><img src="{{ feature.image_url }}" width="100" height="100"></li>
+            <li><img id="{{ feature.feature_id }}-img" src="{{ feature.image_url }}" width="100" height="100"></li>
           {% empty %}
             <li>{% trans "This layer does not have any contributions yet." %}</li>
           {% endfor %}
@@ -154,11 +154,10 @@
   <![endif]-->
 
   <script src="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js"></script>
-    
+
   {% include "_permissions_form_js.html" %}
 
   <script type="text/javascript">
-    var geojsonLayer;
       function zoom_to_box(map, bbox){
             var bounds = [
                 [bbox[2], bbox[0]],
@@ -166,21 +165,37 @@
             ];
             map.fitBounds(bounds);
         }
+
+      var HoverIcon = L.Icon.Default.extend({
+                options: {
+                  'iconSize': [30, 50],
+                  'iconAnchor': [15, 50]
+                }
+              });
+      var hoverIcon = new HoverIcon();
+
+      var defaultIcon = new L.Icon.Default();
+
       var map = L.map('preview_map').setView([51.505, -0.09], 13);    
       L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
           attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(map);
 
-      function highlightFeature(e){
-        geojsonLayer.bringToFront();
+      function toggleFeatureClass(feature){
+        var id = feature.id.split('.')[1];
+        $('#'+id+'-img').toggleClass('feature_hover');
       }
-      function resetHighlight(e) {
-          geojsonLayer.resetStyle(e.target);
-      }
+
       function onEachFeature(feature, layer) {
           layer.on({
-              mouseover: highlightFeature,
-              mouseout: resetHighlight
+              mouseover: function(){
+                layer.setIcon(hoverIcon);
+                toggleFeatureClass(feature);
+              },
+              mouseout: function(){
+                layer.setIcon(defaultIcon);
+                toggleFeatureClass(feature);
+              }
          });
       }
 
@@ -189,15 +204,12 @@
           url: "/proxy?url={{ layer.json_url|urlencode }}",
           dataType: 'json',
           success: function (response) {
-
               geojsonLayer = L.geoJson(response,{
                 onEachFeature: onEachFeature
               }).addTo(map);
               zoom_to_box(map, [{{ layer.bbox_string }}]);
           }
       });
-      // L.tileLayer("{{ layer.tiles_url|safe }}",{}).addTo(map);
-      // zoom_to_box(map, [{{ layer.bbox_string }}]);
   </script>
 
 {% endblock extra_script %}

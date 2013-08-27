@@ -8,3 +8,4 @@ geoserver
 local_settings.py
 debug.log
 development.db
+geonode_formhub/uploaded

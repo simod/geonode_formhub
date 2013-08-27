@@ -8,8 +8,9 @@ from django.conf import settings
 class Gs_client(object):
 
     def __init__(self, url):
-        self._user, self._password = settings.GEOSERVER_CREDENTIALS
-        self.gs_url = settings.GEOSERVER_BASE_URL
+        self._user = settings.OGC_SERVER['default']['USER']
+        self._password = settings.OGC_SERVER['default']['PASSWORD']
+        self.gs_url = settings.OGC_SERVER['default']['LOCATION']
         self.client = self.get_client(url)
 
     def get_client(self, url):
@@ -34,7 +35,7 @@ class Gs_client(object):
     def updatebounds(self, layername):
         
         url = "%srest/workspaces/geonode/datastores/%s/featuretypes/%s.xml?recalculate=nativebbox,latlonbbox" \
-                % (self.gs_url, settings.DB_DATASTORE_NAME, layername)
+                % (self.gs_url, settings.DATABASES['datastore']['NAME'], layername)
 
         data = '''<featureType>
                     <name>%s</name>

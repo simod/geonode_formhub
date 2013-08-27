@@ -35,7 +35,6 @@ def compile_context(valid_id, req_body, attributes):
             )
         if len(req_body['_attachments']) > 0:
             image = req_body['_attachments'][0]
-
     lat = req_body['_geolocation'][0] if req_body['_geolocation'][0] is not None else 0
     lon = req_body['_geolocation'][1] if req_body['_geolocation'][1] is not None else 0
     context['lat'] = lat
@@ -48,13 +47,19 @@ def compile_context(valid_id, req_body, attributes):
 @csrf_exempt
 @require_POST
 def form_save(req):
-    
     check_geonode_is_up()
-    print req.body
-    body = json.loads(req.body)
-    layername = body['_xform_id_string']
+    layername = req.POST.get('_xform_id_string', None)
+    if not layername: 
+        # Normal post from odk
+        body = json.loads(req.body)
+        layername = body['_xform_id_string']
+    else:
+        # Test environment
+        body = req.POST.dict()
+        body['_geolocation'] = json.loads(body['_geolocation'])
+
     try:
-        layer = Layer.objects.get(title=layername)
+        layer = Layer.objects.get(name=layername)
     except Layer.DoesNotExist:
         raise Layer.DoesNotExist
     # Don't trust the id from ODK, look into the db sequence to get the right one
@@ -95,11 +100,11 @@ def get_valid_id(layername):
     """ Get a valid id from the layer sequence from the database
     """
     connection = psycopg2.connect(
-        host=settings.OGC_SERVER['datastore']['HOST'],
-        database=settings.OGC_SERVER['datastore']['NAME'],
-        user=settings.OGC_SERVER['datastore']['USER'],
-        password=settings.OGC_SERVER['datastore']['PASSWORD'],
-        port=settings.OGC_SERVER['datastore']['PORT']
+        host=settings.DATABASES['datastore']['HOST'],
+        database=settings.DATABASES['datastore']['NAME'],
+        user=settings.DATABASES['datastore']['USER'],
+        password=settings.DATABASES['datastore']['PASSWORD'],
+        port=settings.DATABASES['datastore']['PORT']
     )
     cursor=connection.cursor()
     cursor.execute('SELECT last_value FROM %s_fid_seq;' % layername)

@@ -13,7 +13,7 @@ from geonode.layers.models import Layer
 from .utils import Gs_client
 from features.models import Feature
 
-wfs_url = settings.GEOSERVER_BASE_URL + "wfs/WfsDispatcher?"
+wfs_url = settings.OGC_SERVER['default']['LOCATION'] + "wfs/WfsDispatcher?"
 
 def index(req):
     pass

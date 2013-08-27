@@ -50,7 +50,7 @@ def compile_context(valid_id, req_body, attributes):
 def form_save(req):
     
     check_geonode_is_up()
-
+    print req.body
     body = json.loads(req.body)
     layername = body['_xform_id_string']
     try:
@@ -95,12 +95,12 @@ def get_valid_id(layername):
     """ Get a valid id from the layer sequence from the database
     """
     connection = psycopg2.connect(
-        host=settings.DB_DATASTORE_HOST,
-        database=settings.DB_DATASTORE_DATABASE,
-        user=settings.DB_DATASTORE_USER,
-        password=settings.DB_DATASTORE_PASSWORD,
-        port=settings.DB_DATASTORE_PORT
-        )
+        host=settings.OGC_SERVER['datastore']['HOST'],
+        database=settings.OGC_SERVER['datastore']['NAME'],
+        user=settings.OGC_SERVER['datastore']['USER'],
+        password=settings.OGC_SERVER['datastore']['PASSWORD'],
+        port=settings.OGC_SERVER['datastore']['PORT']
+    )
     cursor=connection.cursor()
     cursor.execute('SELECT last_value FROM %s_fid_seq;' % layername)
     valid_id = cursor.fetchone()[0] + 1

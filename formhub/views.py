@@ -33,8 +33,9 @@ def compile_context(valid_id, req_body, attributes):
                 'value': req_body[a.attribute]
                 }
             )
-        if len(req_body['_attachments']) > 0:
-            image = req_body['_attachments'][0]
+    if len(req_body['_attachments']) > 0:
+        image = req_body['_attachments'][0]
+
     lat = req_body['_geolocation'][0] if req_body['_geolocation'][0] is not None else 0
     lon = req_body['_geolocation'][1] if req_body['_geolocation'][1] is not None else 0
     context['lat'] = lat
@@ -85,14 +86,14 @@ def context_to_feature(layer, context, image):
     """ Write the feature with the image to the database
     """
     try:
-        Feature.objects.create(
+        f = Feature.objects.create(
             feature_id = context['id'],
             lat = context['lat'],
             lon = context['lon'],
             layer = layer,
             image = image
             )
-        return True
+        return f
     except:
         raise
 

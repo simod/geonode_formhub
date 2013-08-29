@@ -35,7 +35,7 @@ OGC_SERVER = {
             'GEOGIT_ENABLED' : False,
             'WMST_ENABLED' : False,
             # Set to name of database in DATABASES dictionary to enable
-            'DATASTORE': 'geonode', #'datastore',
+            'DATASTORE': 'datastore', #'datastore',
         }
     }
 }

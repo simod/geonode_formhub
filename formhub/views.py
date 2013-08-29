@@ -1,5 +1,4 @@
 import json
-import psycopg2
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -10,7 +9,7 @@ from django.views.decorators.http import require_POST
 from geonode.utils import check_geonode_is_up
 from geonode.layers.models import Layer
 
-from .utils import Gs_client
+from .utils import Gs_client, get_valid_id, check_feature_store, check_user
 from features.models import Feature
 
 wfs_url = settings.OGC_SERVER['default']['LOCATION'] + "wfs/WfsDispatcher?"
@@ -49,6 +48,10 @@ def compile_context(valid_id, req_body, attributes):
 @require_POST
 def form_save(req):
     check_geonode_is_up()
+
+    if not check_feature_store():
+        raise ValueError('No postgis database found.')
+    
     layername = req.POST.get('_xform_id_string', None)
     if not layername: 
         # Normal post from odk
@@ -63,6 +66,10 @@ def form_save(req):
         layer = Layer.objects.get(name=layername)
     except Layer.DoesNotExist:
         raise Layer.DoesNotExist
+
+    if not check_user(body['_userform_id'].split('_')[0],  layer):
+        raise ValueError('User not found in the database')
+
     # Don't trust the id from ODK, look into the db sequence to get the right one
     valid_id = get_valid_id(layername)
     attributes = layer.attribute_set.all()
@@ -96,20 +103,3 @@ def context_to_feature(layer, context, image):
         return f
     except:
         raise
-
-def get_valid_id(layername):
-    """ Get a valid id from the layer sequence from the database
-    """
-    connection = psycopg2.connect(
-        host=settings.DATABASES['datastore']['HOST'],
-        database=settings.DATABASES['datastore']['NAME'],
-        user=settings.DATABASES['datastore']['USER'],
-        password=settings.DATABASES['datastore']['PASSWORD'],
-        port=settings.DATABASES['datastore']['PORT']
-    )
-    cursor=connection.cursor()
-    cursor.execute('SELECT last_value FROM %s_fid_seq;' % layername)
-    valid_id = cursor.fetchone()[0] + 1
-    cursor.close()
-    connection.close()
-    return valid_id

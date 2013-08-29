@@ -1,8 +1,10 @@
 import httplib2
+import psycopg2
 
 from urlparse import urlparse
 
 from django.conf import settings
+from django.contrib.auth.models import User
 
 
 class Gs_client(object):
@@ -48,3 +50,39 @@ class Gs_client(object):
             self.client.request(url, method='PUT', body=data, headers=headers)
         except:
             raise Exception("Geoserver error when updating bounds")
+
+
+def get_valid_id(layername):
+    """ Get a valid id from the layer sequence from the database
+    """
+    datastore = settings.OGC_SERVER['default']['OPTIONS']['DATASTORE']
+    db = settings.DATABASES[datastore]
+    connection = psycopg2.connect(
+        host=db['HOST'],
+        database=db['NAME'],
+        user=db['USER'],
+        password=db['PASSWORD'],
+        port=db['PORT']
+    )
+    cursor=connection.cursor()
+    cursor.execute('SELECT last_value FROM %s_fid_seq;' % layername)
+    valid_id = cursor.fetchone()[0] + 1
+    cursor.close()
+    connection.close()
+    return valid_id
+
+def check_feature_store():
+    datastore = settings.OGC_SERVER['default']['OPTIONS']['DATASTORE']
+    if not 'postgis' in settings.DATABASES[datastore]['ENGINE']:
+        return False
+    else:
+        return True
+
+def check_user(username, layer):
+
+    user = User.objects.get(username=username)
+    return user.has_perm('layers.change_layer', obj=layer)
+
+
+
+

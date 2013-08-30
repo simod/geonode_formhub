@@ -1,3 +1,6 @@
+import os
+import httplib2
+
 from django.db import models
 from django.conf import settings
 
@@ -18,3 +21,13 @@ class Feature(models.Model):
 
     def image_url(self):
         return "%s%s" % (settings.FORMHUB_MEDIA_URL, self.image)
+
+    def small_image_url(self):
+        h = httplib2.Http()
+        image_name, ext = os.path.splitext(self.image)
+        small_image_url =  "%s%s-small%s" % (settings.FORMHUB_MEDIA_URL, image_name, ext)
+        resp, content = h.request(small_image_url, 'OPTIONS')
+        if resp.status == 200:
+            return small_image_url
+        else:
+            return self.image_url()

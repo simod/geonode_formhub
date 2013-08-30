@@ -72,7 +72,9 @@
         <h2>{% trans "Crowd contributions" %}</h2>
         <ul class="unstyled space">
           {% for feature in features %} 
-            <li><img class="feature_img" id="{{ feature.feature_id }}-img" src="{{ feature.image_url }}" width="100" height="100"></li>
+            {% if feature.image %}
+            <li><img class="feature_img" id="{{ feature.feature_id }}-img" src="{{ feature.small_image_url }}"></li>
+            {% endif %}
           {% empty %}
             <li>{% trans "This layer does not have any contributions yet." %}</li>
           {% endfor %}

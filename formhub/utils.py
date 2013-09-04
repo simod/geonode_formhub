@@ -9,17 +9,18 @@ from django.contrib.auth.models import User
 
 class Gs_client(object):
 
-    def __init__(self, url):
+    def __init__(self):
         self._user = settings.OGC_SERVER['default']['USER']
         self._password = settings.OGC_SERVER['default']['PASSWORD']
         self.gs_url = settings.OGC_SERVER['default']['LOCATION']
-        self.client = self.get_client(url)
+        self.wfs_url = settings.OGC_SERVER['default']['LOCATION'] + "wfs/WfsDispatcher?"
+        self.client = self.get_client()
 
-    def get_client(self, url):
+    def get_client(self):
         
         http_client = httplib2.Http()
         http_client.add_credentials(self._user, self._password)
-        _netloc = urlparse(url).netloc
+        _netloc = urlparse(self.wfs_url).netloc
         http_client.authorizations.append(
             httplib2.BasicAuthentication(
                 (self._user, self._password),

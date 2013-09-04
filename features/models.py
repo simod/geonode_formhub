@@ -2,11 +2,14 @@ import os
 import httplib2
 
 from django.db import models
+from django.db.models import signals
 from django.conf import settings
+from django.template.loader import render_to_string
+from django.http import HttpResponse
 
 from geonode.layers.models import Layer
 
-from formhub.utils import datastore_connection
+from formhub.utils import datastore_connection, Gs_client
 
 class Feature(models.Model):
 
@@ -41,4 +44,29 @@ class Feature(models.Model):
         attributes = cursor.fetchall()
         cursor.close()
         connection.close()
-        return ",".join(attributes[0][2:])
+        try: 
+            attrs = ",".join(attributes[0][2:])
+        except:
+            attrs = 'Not available anymore in the databse'
+        return attrs
+
+
+def feature_post_delete(instance, sender, **kwargs):
+    context = {
+        'layername': instance.layer.name,
+        'feature': instance
+    }
+    import ipdb; ipdb.set_trace()
+    template = render_to_string('formhub/transaction_delete.xml', context)
+    geoserver = Gs_client()
+    try:
+        response = geoserver.client.request(geoserver.wfs_url, method='POST', body=template)
+
+        #Update the layer bounds and the thumbnail
+        geoserver.updatebounds(instance.layer.name)
+        instance.layer.update_thumbnail()
+        return HttpResponse('Deleted')
+    except:
+        raise 
+
+signals.post_delete.connect(feature_post_delete, sender=Feature)

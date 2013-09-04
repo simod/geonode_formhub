@@ -12,8 +12,6 @@ from geonode.layers.models import Layer
 from .utils import Gs_client, get_valid_id, check_feature_store, check_user
 from features.models import Feature
 
-wfs_url = settings.OGC_SERVER['default']['LOCATION'] + "wfs/WfsDispatcher?"
-
 def index(req):
     pass
 
@@ -79,9 +77,9 @@ def form_save(req):
     template = render_to_string('formhub/transaction_insert.xml',context)
 
     # Instanciate the client and post the insert request
-    geoserver = Gs_client(wfs_url)
+    geoserver = Gs_client()
     try:
-        response = geoserver.client.request(wfs_url, method='POST', body=template)
+        response = geoserver.client.request(geoserver.wfs_url, method='POST', body=template)
 
         #Update the layer bounds and the thumbnail
         geoserver.updatebounds(layername)

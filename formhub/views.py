@@ -72,7 +72,9 @@ def form_save(req):
 
     # Don't trust the id from ODK, look into the db sequence to get the right one
     valid_id = get_valid_id(layername)
+    # Guess the list of fields from the layer's attributes
     attributes = layer.attribute_set.all()
+    # Compile the context
     context, image = compile_context(valid_id, body, attributes)
     template = render_to_string('formhub/transaction_insert.xml',context)
 

@@ -6,6 +6,8 @@ from django.conf import settings
 
 from geonode.layers.models import Layer
 
+from formhub.utils import datastore_connection
+
 class Feature(models.Model):
 
     feature_id = models.IntegerField(primary_key=True)
@@ -17,7 +19,7 @@ class Feature(models.Model):
     image = models.CharField(max_length=128, blank=True, null=True)
 
     def __unicode__(self):
-        return 'Feature of %s' % self.layer.typename
+        return 'Feature of %s, %s' % (self.layer.typename, self.attribute())
 
     def image_url(self):
         return "%s%s" % (settings.FORMHUB_MEDIA_URL, self.image)
@@ -31,3 +33,12 @@ class Feature(models.Model):
             return small_image_url
         else:
             return self.image_url()
+
+    def attribute(self):
+        connection = datastore_connection()
+        cursor = connection.cursor()
+        cursor.execute('SELECT * FROM %s WHERE fid=%d' % (self.layer.name, self.feature_id))
+        attributes = cursor.fetchall()
+        cursor.close()
+        connection.close()
+        return ",".join(attributes[0][2:])

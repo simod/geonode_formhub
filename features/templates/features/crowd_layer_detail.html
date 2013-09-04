@@ -73,7 +73,7 @@
         <ul class="unstyled space">
           {% for feature in features %} 
             {% if feature.image %}
-            <li><img class="feature_img" id="{{ feature.feature_id }}-img" src="{{ feature.small_image_url }}"></li>
+            <li><img class="feature_img" id="{{ feature.feature_id }}-img" src="{{ feature.small_image_url }}" width="150px" height="150px"></li>
             {% endif %}
           {% empty %}
             <li>{% trans "This layer does not have any contributions yet." %}</li>
@@ -109,27 +109,6 @@
         <p>{% trans "Click the button below to generate a new map based on this layer." %}</p>
         <a href="{% url "new_map" %}?layer={{layer.typename}}" class="btn btn-large">{% trans "Create a Map" %}</a>
     </div>
-    {% if user.is_authenticated %}
-    <div class="well">
-        <h2>{% trans "Styles" %}</h2>
-        <p>{% trans "The following styles are associated with this layer. Choose a style to view it in the preview map." %}</p>
-        <ul class="unstyled space">
-          {% for style in layer.styles.all %}
-            <li>
-                {% if layer.default_style == style %}
-                    <input type="radio" checked name="style" id="{{ style.name }}" value="{{ style.title }}"/>
-                    (default style)
-                {% else %}
-                    <input type="radio" name="style" id="{{ style.name }}" value="{{ style.title }}"/>
-                {% endif %}
-                <a href="{{ GEOSERVER_BASE_URL }}styles/{{ style.name }}.sld" >{{ style.sld_title }}</a>
-            </li>
-          {% empty %}
-            <li>{% trans "No styles associated with this layer" %}</li>
-          {% endfor %}
-        </ul>
-    </div>
-    {% endif %}
     <div class="well">
       <h2>{% trans "About" %}</h2>
       <p>{% trans "Layer Owner" %}</p>
@@ -163,26 +142,26 @@
       var featureLayer, features = {};
 
       function zoom_to_box(map, bbox){
-            var bounds = [
-                [bbox[2], bbox[0]],
-                [bbox[3], bbox[1]]
-            ];
-            map.fitBounds(bounds);
-        }
+        var bounds = [
+          [bbox[2], bbox[0]],
+          [bbox[3], bbox[1]]
+        ];
+        map.fitBounds(bounds);
+      }
 
       var HoverIcon = L.Icon.Default.extend({
-                options: {
-                  'iconSize': [30, 50],
-                  'iconAnchor': [15, 50]
-                }
-              });
+        options: {
+          'iconSize': [30, 50],
+          'iconAnchor': [15, 50]
+        }
+      });
       var hoverIcon = new HoverIcon();
 
       var defaultIcon = new L.Icon.Default();
 
       var map = L.map('preview_map').setView([51.505, -0.09], 13);    
       L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(map);
 
       function toggleFeatureClass(id){
@@ -212,18 +191,18 @@
       }
 
       function onEachFeature(feature, layer) {
-          var id = idFromFeature(feature);
-          features[id] = layer;
-          layer.on({
-              mouseover: function(){
-                highlightFeature(layer);
-                toggleFeatureClass(id);
-              },
-              mouseout: function(){
-                resetFeature(layer);
-                toggleFeatureClass(id);
-              }
-         });
+        var id = idFromFeature(feature);
+        features[id] = layer;
+        layer.on({
+          mouseover: function(){
+            highlightFeature(layer);
+            toggleFeatureClass(id);
+          },
+          mouseout: function(){
+            resetFeature(layer);
+            toggleFeatureClass(id);
+          }
+        });
       }
 
       $('.feature_img').mouseover(function(e){
@@ -239,15 +218,15 @@
       });
 
       $.ajax({
-          type: "GET",
-          url: "/proxy?url={{ layer.json_url|urlencode }}",
-          dataType: 'json',
-          success: function (response) {
-              featureLayer = L.geoJson(response,{
-                onEachFeature: onEachFeature
-              }).addTo(map);
-              zoom_to_box(map, [{{ layer.bbox_string }}]);
-          }
+        type: "GET",
+        url: "/proxy?url={{ layer.json_url|urlencode }}",
+        dataType: 'json',
+        success: function (response) {
+          featureLayer = L.geoJson(response,{
+            onEachFeature: onEachFeature
+          }).addTo(map);
+          zoom_to_box(map, [{{ layer.bbox_string }}]);
+        }
       });
   </script>
 

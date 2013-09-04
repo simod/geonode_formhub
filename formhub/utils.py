@@ -51,10 +51,7 @@ class Gs_client(object):
         except:
             raise Exception("Geoserver error when updating bounds")
 
-
-def get_valid_id(layername):
-    """ Get a valid id from the layer sequence from the database
-    """
+def datastore_connection():
     datastore = settings.OGC_SERVER['default']['OPTIONS']['DATASTORE']
     db = settings.DATABASES[datastore]
     connection = psycopg2.connect(
@@ -64,6 +61,12 @@ def get_valid_id(layername):
         password=db['PASSWORD'],
         port=db['PORT']
     )
+    return connection
+
+def get_valid_id(layername):
+    """ Get a valid id from the layer sequence from the database
+    """
+    connection = datastore_connection()
     cursor=connection.cursor()
     cursor.execute('SELECT last_value FROM %s_fid_seq;' % layername)
     valid_id = cursor.fetchone()[0] + 1

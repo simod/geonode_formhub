@@ -56,7 +56,6 @@ def feature_post_delete(instance, sender, **kwargs):
         'layername': instance.layer.name,
         'feature': instance
     }
-    import ipdb; ipdb.set_trace()
     template = render_to_string('formhub/transaction_delete.xml', context)
     geoserver = Gs_client()
     try:

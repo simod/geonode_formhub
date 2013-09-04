@@ -1,4 +1,4 @@
-Geonode_Formhub
+Geonode Formhub
 ========================
 
 GeoNode extension to integrate data coming from ODK/Formhub.
@@ -44,11 +44,11 @@ Usage
 
 In order to be Formhub compliant the layer must be on postgis (GeoNode's DB_DATASTORE=True) and must be a POINT layer.
 
-Create and upload a form that match the layer in GeoNode with the same fields plus if a coordinate field and an image field (refer to the Formhub guide for this https://formhub.org/syntax/).
+Create and upload a form that match the layer name in GeoNode with the same fields plus a coordinate field and an image field (refer to the Formhub guide for this https://formhub.org/syntax/).
 
-In the Form page set a rest service to http://localhost:8001/formhub/save
+In the Form page set a rest service as JSON post to http://localhost:8001/formhub/save
 
-In ODK set the address to http://192.168.2.1/youruser
+On your mobile, in ODK set the address to http://192.168.2.1/youruser
 
 Start submitting.
 

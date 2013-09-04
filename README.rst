@@ -19,20 +19,20 @@ To install the latest from GeoNode's master branch use the following command::
 
 Install Formhub following https://github.com/modilabs/formhub.
 
-Create a proxy in apache:
+Create a proxy in apache::
 
     ProxyPass / http://192.168.2.1:8000/
     ProxyPassReverse / http://192.168.2.1:8000/
 
-Start apache and open a network share through the wi fi device.
+Start apache and open a network share through the wi-fi device.
 
 Modify the file my_geonode/geoserver/data/security/auth/geonodeAuthProvider/config.xml and set the port to 8001
 
-Start Formhub: 
+Start Formhub::
 
     $ python manage.py runserver 192.168.2.1:8000
 
-Start GeoNode:
+Start GeoNode::
     
     $ paver start_geoserver 
     $ python manage.py runserver 8001

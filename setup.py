@@ -20,7 +20,6 @@ setup(
     keywords="geonode_formhub geonode django",
     url='https://github.com/geonode_formhub/geonode_formhub',
     packages=['geonode_formhub',],
-    install_requires=["geonode==2.0b30"],
     include_package_data=True,
     zip_safe=False,
 )

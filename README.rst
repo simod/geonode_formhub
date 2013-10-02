@@ -3,19 +3,30 @@ Geonode Formhub
 
 GeoNode extension to integrate data coming from ODK/Formhub.
 
-Installation in development/testing mode
-------------
+Installation of the extension development mode
+----------------------------------------------
 
-Create a new virtualenv for geonode_formhub, install GeoNode and setup your project::
+    $ git clone https://github.com/simod/geonode_formhub.git@no-project
 
-    $ mkvirtualenv my_geonode
-    $ pip install Django
-    $ django-admin.py startproject my_geonode --template=https://github.com/simod/geonode_formhub/archive/master.zip -epy,rst 
-    $ pip install -e my_geonode
+Activate the geonode virtualenv
 
-To install the latest from GeoNode's master branch use the following command::
+    $ pip install -e geonode_formhub
 
-    $ pip install -e git+https://github.com/GeoNode/geonode.git#egg=geonode --upgrade
+Add the following apps to your installed apps: 
+
+    'geonode_formhub.features',
+    'geonode_formhub.formhub',
+
+Syncd the database
+    
+    $ python manage.py syncdb
+
+Add the content of the geonode_formhub/local_setting.sample to your local settings.
+
+Add the content of geonode_formhub/templates/base.html to the geonode/tempaltes/base.html template.
+
+Setup formhub
+-------------
 
 Install Formhub following https://github.com/modilabs/formhub.
 

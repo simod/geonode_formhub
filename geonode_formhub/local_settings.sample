@@ -1,0 +1,13 @@
+import os
+import geonode_formhub
+
+#The formhub media url
+FORMHUB_MEDIA_URL = 'http://192.168.2.1:8000/media/'
+
+GEONODE_FORMHUB_ROOT = os.path.abspath(os.path.dirname(geonode_formhub.__file__))
+PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+
+STATICFILES_DIRS = [
+    os.path.join(PROJECT_ROOT, "static"),
+    os.path.join(GEONODE_FORMHUB_ROOT, "static"),
+]

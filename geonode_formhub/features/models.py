@@ -9,7 +9,7 @@ from django.http import HttpResponse
 
 from geonode.layers.models import Layer
 
-from formhub.utils import datastore_connection, Gs_client
+from geonode_formhub.formhub.utils import datastore_connection, Gs_client
 
 class Feature(models.Model):
 

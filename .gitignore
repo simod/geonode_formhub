@@ -9,3 +9,5 @@ local_settings.py
 debug.log
 development.db
 geonode_formhub/uploaded
+*.
+.DS_Store

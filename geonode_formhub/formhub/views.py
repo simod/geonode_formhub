@@ -3,14 +3,13 @@ import json
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.template.loader import render_to_string
-from django.conf import settings
 from django.views.decorators.http import require_POST
 
 from geonode.utils import check_geonode_is_up
 from geonode.layers.models import Layer
 
 from .utils import Gs_client, get_valid_id, check_feature_store, check_user
-from features.models import Feature
+from geonode_formhub.features.models import Feature
 
 def index(req):
     pass

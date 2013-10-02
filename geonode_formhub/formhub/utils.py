@@ -6,14 +6,15 @@ from urlparse import urlparse
 from django.conf import settings
 from django.contrib.auth.models import User
 
+from geonode.utils import ogc_server_settings
+
 
 class Gs_client(object):
 
     def __init__(self):
-        self._user = settings.OGC_SERVER['default']['USER']
-        self._password = settings.OGC_SERVER['default']['PASSWORD']
-        self.gs_url = settings.OGC_SERVER['default']['LOCATION']
-        self.wfs_url = settings.OGC_SERVER['default']['LOCATION'] + "wfs/WfsDispatcher?"
+        self._user, self._password = ogc_server_settings.credentials
+        self.gs_url = ogc_server_settings.public_url
+        self.wfs_url = ogc_server_settings.public_url + "wfs/WfsDispatcher?"
         self.client = self.get_client()
 
     def get_client(self):
@@ -38,7 +39,7 @@ class Gs_client(object):
     def updatebounds(self, layername):
         
         url = "%srest/workspaces/geonode/datastores/%s/featuretypes/%s.xml?recalculate=nativebbox,latlonbbox" \
-                % (self.gs_url, settings.DATABASES['datastore']['NAME'], layername)
+                % (self.gs_url, ogc_server_settings.datastore_db['NAME'], layername)
 
         data = '''<featureType>
                     <name>%s</name>
@@ -53,14 +54,13 @@ class Gs_client(object):
             raise Exception("Geoserver error when updating bounds")
 
 def datastore_connection():
-    datastore = settings.OGC_SERVER['default']['OPTIONS']['DATASTORE']
-    db = settings.DATABASES[datastore]
+    datastore = ogc_server_settings.datastore_db
     connection = psycopg2.connect(
-        host=db['HOST'],
-        database=db['NAME'],
-        user=db['USER'],
-        password=db['PASSWORD'],
-        port=db['PORT']
+        host=datastore['HOST'],
+        database=datastore['NAME'],
+        user=datastore['USER'],
+        password=datastore['PASSWORD'],
+        port=datastore['PORT']
     )
     return connection
 
@@ -76,8 +76,8 @@ def get_valid_id(layername):
     return valid_id
 
 def check_feature_store():
-    datastore = settings.OGC_SERVER['default']['OPTIONS']['DATASTORE']
-    if not 'postgis' in settings.DATABASES[datastore]['ENGINE']:
+    datastore = ogc_server_settings.datastore_db
+    if not 'postgis' in datastore['ENGINE']:
         return False
     else:
         return True

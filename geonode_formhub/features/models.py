@@ -34,7 +34,7 @@ class Feature(models.Model):
         resp, content = h.request(small_image_url, 'OPTIONS')
         if resp.status == 200:
             return small_image_url
-        else:
+        elif resp.status == 404:
             return self.image_url()
 
     def attribute(self):

@@ -13,11 +13,13 @@
     <div class="span12">
       <h2 class="page-title">{% trans "Explore Crowd Layers" %}</h2>
     </div>
+    <div class="list">
     {% for layer in layers %}
       {% include "features/_crowd_layer_list_item.html" %}
     {% empty %}
     <p>There are no crowd layers yet</p>
     {% endfor %}
+    </div>
  {% endblock %}
 
 {% block extra_script %}

@@ -15,11 +15,16 @@ Activate the geonode virtualenv
 Add the following apps to your installed apps: 
 
     'geonode_formhub.features',
+
     'geonode_formhub.formhub',
 
 Syncd the database
     
     $ python manage.py syncdb
+
+Add the following in the urls.py file:
+
+    (r'^formhub/', include('geonode_formhub.urls')),
 
 Add the content of the geonode_formhub/local_setting.sample to your local settings.
 

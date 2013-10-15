@@ -77,7 +77,8 @@ def get_valid_id(layername):
 
 def check_feature_store():
     datastore = ogc_server_settings.datastore_db
-    if not 'postgis' in datastore['ENGINE']:
+    if not ogc_server_settings.datastore_db.get('ENGINE') \
+        or not 'postgis' in datastore['ENGINE']:
         return False
     else:
         return True

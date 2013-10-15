@@ -1,6 +1,7 @@
 import json
 
 from django.http import HttpResponse
+from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_POST
@@ -44,6 +45,11 @@ def compile_context(valid_id, req_body, attributes):
 @csrf_exempt
 @require_POST
 def form_save(req):
+
+    # Only accept requests from localhost
+    if not settings.FORMHUB_TRUSTED_IP == req.META['REMOTE_ADDR']:
+        return HttpResponse(status=403)
+
     check_geonode_is_up()
 
     if not check_feature_store():

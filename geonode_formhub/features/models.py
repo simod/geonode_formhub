@@ -22,12 +22,16 @@ class Feature(models.Model):
     image = models.CharField(max_length=128, blank=True, null=True)
 
     def __unicode__(self):
-        return 'Feature of %s, %s' % (self.layer.typename, self.attribute())
+        return 'Feature of %s, %s' % (self.layer.typename, self.attributes())
 
     def image_url(self):
         return "%s%s" % (settings.FORMHUB_MEDIA_URL, self.image)
 
     def small_image_url(self):
+        """
+        Check whether formhub has created a small image, otherwise returns 
+        the full one.
+        """
         h = httplib2.Http()
         image_name, ext = os.path.splitext(self.image)
         small_image_url =  "%s%s-small%s" % (settings.FORMHUB_MEDIA_URL, image_name, ext)
@@ -37,7 +41,10 @@ class Feature(models.Model):
         elif resp.status == 404:
             return self.image_url()
 
-    def attribute(self):
+    def attributes(self):
+        """
+        Reads the attributes to be displayed in the admin.
+        """
         connection = datastore_connection()
         cursor = connection.cursor()
         cursor.execute('SELECT * FROM %s WHERE fid=%d' % (self.layer.name, self.feature_id))

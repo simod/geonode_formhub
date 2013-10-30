@@ -37,7 +37,9 @@ class Gs_client(object):
         return http_client
 
     def updatebounds(self, layername):
-        
+        """ 
+        Updates the bounds of the layer in geoserver.
+        """
         url = "%srest/workspaces/geonode/datastores/%s/featuretypes/%s.xml?recalculate=nativebbox,latlonbbox" \
                 % (self.gs_url, ogc_server_settings.datastore_db['NAME'], layername)
 
@@ -54,6 +56,9 @@ class Gs_client(object):
             raise Exception("Geoserver error when updating bounds")
 
 def datastore_connection():
+    """
+    Creates a connection to the db datastore.
+    """
     datastore = ogc_server_settings.datastore_db
     connection = psycopg2.connect(
         host=datastore['HOST'],
@@ -65,7 +70,8 @@ def datastore_connection():
     return connection
 
 def get_valid_id(layername):
-    """ Get a valid id from the layer sequence from the database
+    """ 
+    Get a valid id from the layer sequence from the database
     """
     connection = datastore_connection()
     cursor=connection.cursor()
@@ -76,6 +82,9 @@ def get_valid_id(layername):
     return valid_id
 
 def check_feature_store():
+    """
+    Check that the postgis datastore is configured correctly
+    """
     datastore = ogc_server_settings.datastore_db
     if not ogc_server_settings.datastore_db.get('ENGINE') \
         or not 'postgis' in datastore['ENGINE']:
@@ -87,7 +96,3 @@ def check_user(username, layer):
 
     user = User.objects.get(username=username)
     return user.has_perm('layers.change_layer', obj=layer)
-
-
-
-

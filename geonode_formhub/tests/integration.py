@@ -39,15 +39,12 @@ class FormhubFeatureTest(TestCase):
         call_command('loaddata', 'people_data', verbosity=0)
         upload(gisdata.VECTOR_DATA, console=None)
 
-
     def tearDown(self):
         pass
 
     def test_feature_post(self):
         c = Client()
-        import ipdb; ipdb.set_trace()
         payload = json.loads(sample_context)
         url = reverse('fh-save')
         response = c.post(url, payload)
         self.assertEqual(response.status, 200)
-

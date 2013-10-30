@@ -16,6 +16,10 @@ def index(req):
     pass
 
 def compile_context(valid_id, req_body, attributes):
+    """
+    Converts the request body to the dictionary ready to be 
+    inserted in the xml transaction.
+    """
     context = {
             'fields': []
         }
@@ -45,7 +49,9 @@ def compile_context(valid_id, req_body, attributes):
 @csrf_exempt
 @require_POST
 def form_save(req):
-
+    """
+    Main view to save a odk submission
+    """
     # Only accept requests from localhost
     if not settings.FORMHUB_TRUSTED_IP == req.META['REMOTE_ADDR']:
         return HttpResponse(status=403)

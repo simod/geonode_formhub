@@ -10,12 +10,16 @@ from geonode.utils import ogc_server_settings
 
 
 class Gs_client(object):
-
+    __instance = None
+    
     def __init__(self):
+        if Gs_client.__instance:
+            raise Gs_client.__instance
         self._user, self._password = ogc_server_settings.credentials
         self.gs_url = ogc_server_settings.public_url
         self.wfs_url = ogc_server_settings.public_url + "wfs/WfsDispatcher?"
         self.client = self.get_client()
+        Gs_client.__instance = self
 
     def get_client(self):
         
